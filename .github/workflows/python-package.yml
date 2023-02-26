@@ -70,3 +70,17 @@ jobs:
         python -m pip install pytest
     - name: Run tests
       run: pytest
+
+  deploy:
+
+    needs: test
+    runs-on: ubuntu-latest
+    name: Deploy wheel to Releases
+
+    steps:
+    - run: echo ${{ github.event_name }}
+    - name: Download wheel
+      uses: actions/download-artifact@v3
+      with:
+        name: wheel
+    - run: ls -lah
