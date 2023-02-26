@@ -12,6 +12,7 @@ on:
 jobs:
   build:
 
+    name: Lint code and build wheel
     runs-on: ubuntu-latest
 
     steps:
@@ -34,12 +35,11 @@ jobs:
       run: |
         unzip tsnorm/dictionary/dictionary.zip -d tsnorm/dictionary
         python -m build --wheel
-        cp dist/*.whl .
     - name: Upload wheel to artifacts
       uses: actions/upload-artifact@v3
       with:
         name: wheel
-        path: ./*.whl
+        path: dist/*.whl
 
   test:
 
