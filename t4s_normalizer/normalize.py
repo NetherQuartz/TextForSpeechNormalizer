@@ -95,7 +95,7 @@ class Normalizer:
             return False
         if ("past" in interpretation or "future" in interpretation) and "Tense=Pres" in tag:
             return False
-        if ("past" in interpretation or "present" in interpretation) and ("Tense=Fut" in tag):
+        if ("past" in interpretation or "present" in interpretation) and "Tense=Fut" in tag:
             return False
 
         return True
