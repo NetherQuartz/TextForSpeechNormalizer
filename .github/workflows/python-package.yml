@@ -76,6 +76,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     name: Deploy wheel to Releases
+    if: github.event_name == "tags"
 
     steps:
     - run: echo ${{ github.event_name }}
