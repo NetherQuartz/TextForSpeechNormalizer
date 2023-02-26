@@ -42,9 +42,8 @@ jobs:
       with:
         name: wheel
         path: dist/*.whl
-    - run: |
-        wheel_filename=$(ls -1 dist/*.whl | head -1)
-    - run: echo $wheel_filename
+    - run: echo 'WHEEL_FILENAME=$(ls -1 dist/*.whl | head -1)' >> $GITHUB_ENV
+    - run: echo ${{ env.WHEEL_FILENAME }}
 
   test:
 
