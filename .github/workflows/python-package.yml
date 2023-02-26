@@ -42,8 +42,6 @@ jobs:
       with:
         name: wheel
         path: dist/*.whl
-    - run: echo WHEEL_FILENAME=$(ls -1 dist/*.whl | head -1) >> $GITHUB_ENV
-    - run: echo ${{ env.WHEEL_FILENAME }}
 
   test:
 
@@ -88,12 +86,16 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: wheel
+    - name: Save wheel filename
+      run: |
+        echo WHEEL_FILENAME=$(ls -1 *.whl | head -1) >> $GITHUB_ENV
+        echo ${{ env.WHEEL_FILENAME }}
     - name: Add asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }} 
-        asset_path: ./*.whl
-        # asset_name: AssetName
+        asset_path: ${{ env.WHEEL_FILENAME }}
+        asset_name: ${{ env.WHEEL_FILENAME }}
         asset_content_type: application/zip
