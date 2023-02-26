@@ -88,10 +88,10 @@ jobs:
         name: wheel
     - name: Add asset
       uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }} 
-          asset_path: ./*.whl
-          # asset_name: AssetName
-          asset_content_type: application/zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }} 
+        asset_path: ./*.whl
+        # asset_name: AssetName
+        asset_content_type: application/zip
