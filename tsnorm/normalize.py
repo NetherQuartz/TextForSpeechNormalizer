@@ -27,7 +27,7 @@ class Normalizer:
 
         self._word_forms = pickle.load(resource_stream(__name__, "dictionary/wordforms.dat"))
         self._lemmas = pickle.load(resource_stream(__name__, "dictionary/lemmas.dat"))
-        
+
         self._model = spacy.load(MODEL)
 
         for word, forms in self._word_forms.items():
@@ -35,7 +35,7 @@ class Normalizer:
                 if len(forms) == 1:
                     self._model.tokenizer.add_special_case(word, [{"ORTH": word}])
                     self._model.tokenizer.add_special_case(word.capitalize(), [{"ORTH": word.capitalize()}])
-    
+
     def put_stress_mark(self, word: str, stress_pos: list[int]) -> str:
         word = list(word)
         insert_num = 0
@@ -69,33 +69,20 @@ class Normalizer:
 
         if interpretation == "canonical":
             return True
-        if "plural" in interpretation and "Number=Plur" not in tag:
-            return False
-        if "singular" in interpretation and "Number=Sing" not in tag:
-            return False
-        if "nominative" not in interpretation and "Case=Nom" in tag:
-            return False
-        if "genitive" not in interpretation and "Case=Gen" in tag:
-            return False
-        if "dative" not in interpretation and "Case=Dat" in tag:
-            return False
 
-        if "accusative" not in interpretation and "Case=Acc" in tag:
-            adj = False
-            if "ADJ" in tag and "Animacy=Inan" in tag:
-                adj = True
-            if not adj:
-                return False
-
-        if "instrumental" not in interpretation and "Case=Ins" in tag:
-            return False
-        if "prepositional" not in interpretation and "locative" not in interpretation and "Case=Loc" in tag:
-            return False
-        if ("present" in interpretation or "future" in interpretation) and "Tense=Past" in tag:
-            return False
-        if ("past" in interpretation or "future" in interpretation) and "Tense=Pres" in tag:
-            return False
-        if ("past" in interpretation or "present" in interpretation) and "Tense=Fut" in tag:
+        if any([
+            "plural" in interpretation and "Number=Plur" not in tag,
+            "singular" in interpretation and "Number=Sing" not in tag,
+            "nominative" not in interpretation and "Case=Nom" in tag,
+            "genitive" not in interpretation and "Case=Gen" in tag,
+            "dative" not in interpretation and "Case=Dat" in tag,
+            "accusative" not in interpretation and "Case=Acc" in tag and ("ADJ" not in tag or "Animacy=Inan" not in tag),
+            "instrumental" not in interpretation and "Case=Ins" in tag,
+            "prepositional" not in interpretation and "locative" not in interpretation and "Case=Loc" in tag,
+            ("present" in interpretation or "future" in interpretation) and "Tense=Past" in tag,
+            ("past" in interpretation or "future" in interpretation) and "Tense=Pres" in tag,
+            ("past" in interpretation or "present" in interpretation) and "Tense=Fut" in tag
+        ]):
             return False
 
         return True
@@ -105,7 +92,7 @@ class Normalizer:
         res = []
         for token in self._model(text):
             if token.pos_ != "PUNCT":
-                word = { "token": token.text, "tag": token.tag_ }
+                word = {"token": token.text, "tag": token.tag_}
 
                 if word["token"] in self._word_forms:
                     word["interpretations"] = self._word_forms[word["token"]]
@@ -118,8 +105,8 @@ class Normalizer:
                 word["uppercase"] = word["token"].upper() == word["token"]
                 word["starts_with_a_capital_letter"] = word["token"][0].upper() == word["token"][0]
             else:
-                word = { "token": token.text, "is_punctuation": True }
-            
+                word = {"token": token.text, "is_punctuation": True}
+
             word["whitespace"] = token.whitespace_
             res.append(word)
 
@@ -165,5 +152,5 @@ class Normalizer:
                 accentuated = accentuated.upper()
             res += accentuated
             res += word["whitespace"]
-            
+
         return res
