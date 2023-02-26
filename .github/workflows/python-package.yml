@@ -42,6 +42,9 @@ jobs:
       with:
         name: wheel
         path: dist/*.whl
+    - run: |
+        wheel_filename=${ls -1 *.whl | head -1}
+    - run: echo $wheel_filename
 
   test:
 
