@@ -124,3 +124,38 @@ jobs:
         suffix: .whl
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-test:
+
+    needs: deploy-check
+    runs-on: ubuntu-latest
+    name: Deploy wheel to test PyPI
+    if: github.event_name == 'release' && github.event.action == 'created' && github.event.release.prerelease
+    
+    steps:
+    - name: Download wheel
+      uses: actions/download-artifact@v3
+      with:
+        name: wheel
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_TOKEN }}
+        repository_url: https://test.pypi.org/legacy/
+
+  publish-prod:
+
+    needs: deploy-check
+    runs-on: ubuntu-latest
+    name: Deploy wheel to PyPI
+    if: github.event_name == 'release' && github.event.action == 'created' && !github.event.release.prerelease
+    
+    steps:
+    - name: Download wheel
+      uses: actions/download-artifact@v3
+      with:
+        name: wheel
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_TOKEN }}
