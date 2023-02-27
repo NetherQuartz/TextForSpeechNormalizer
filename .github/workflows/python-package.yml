@@ -88,7 +88,7 @@ jobs:
       with:
         name: wheel
     - name: Save wheel filename
-      run: echo WHEEL_FILENAME=${$(ls -1 *.whl | head -1)%.*} >> $GITHUB_ENV
+      run: echo WHEEL_FILENAME=$(ls -1 *.whl | head -1) | sed "s/\.whl//" >> $GITHUB_ENV
     - name: Check saved wheel filename
       run: echo ${{ env.WHEEL_FILENAME }}
     - name: Remove wheel file extension
