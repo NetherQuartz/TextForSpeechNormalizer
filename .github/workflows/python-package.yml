@@ -77,8 +77,8 @@ jobs:
 
     needs: test
     runs-on: ubuntu-latest
-    name: Deploy wheel to Releases
-    # if: github.event_name == 'release' && github.event.action == 'created'
+    name: Check package version and tag
+    if: github.event_name == 'release' && github.event.action == 'created'
 
     steps:
     - run: echo ${{ github.event_name }} ${{ github.event.action }} ${{ github.event.release.tag_name }}
@@ -93,7 +93,7 @@ jobs:
     - name: Install wheel
       run: pip install *.whl
     - name: Check package version
-      run: python -c "import tsnorm as ts; assert ts.__version__ == '${{ github.event.release.tag_name }}'"
+      run: python -c "import tsnorm as ts; v = ts.__version__; print(v); assert v == '${{ github.event.release.tag_name }}'"
 
   deploy-github:
 
