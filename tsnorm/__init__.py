@@ -1,7 +1,7 @@
 from .normalize import Normalizer
 from .spacy_model import download_model
 
-__version__ = "0.1.12"
+__version__ = "0.1.13"
 
 
 download_model()
