@@ -87,15 +87,9 @@ jobs:
       with:
         name: wheel
     - name: Save wheel filename
-      run: |
-        echo WHEEL_FILENAME=$(ls -1 *.whl | head -1) >> $GITHUB_ENV
-        echo ${{ env.WHEEL_FILENAME }}
+      run: echo WHEEL_FILENAME=$(ls -1 *.whl | head -1) >> $GITHUB_ENV
     - name: Add asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: djn24/add-asset-to-release@v1
       with:
-        upload_url: ${{ github.event.release.upload_url }} 
-        asset_path: ${{ env.WHEEL_FILENAME }}
-        asset_name: ${{ env.WHEEL_FILENAME }}
-        asset_content_type: application/zip
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: ${{ env.WHEEL_FILENAME }}
