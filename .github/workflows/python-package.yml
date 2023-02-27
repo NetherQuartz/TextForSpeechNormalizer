@@ -88,8 +88,16 @@ jobs:
         name: wheel
     - name: Save wheel filename
       run: echo WHEEL_FILENAME=$(ls -1 *.whl | head -1) >> $GITHUB_ENV
+    - name: Check saved wheel filename
+      run: echo ${{ env.WHEEL_FILENAME }}
     - name: Add asset
-      uses: djn24/add-asset-to-release@v1
+      uses: PeerXu/upload-asset@v1
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        path: ${{ env.WHEEL_FILENAME }}
+        file: ${{ env.WHEEL_FILENAME }}
+        os: linux
+        arch: amd64
+        with_tag: true
+        with_sha1: true
+        suffix: .whl
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
