@@ -95,9 +95,9 @@ jobs:
       uses: PeerXu/upload-asset@v1
       with:
         file: ${{ env.WHEEL_FILENAME }}
-        os: linux
-        arch: amd64
-        with_tag: true
+        # os: linux
+        # arch: amd64
+        with_tag: false
         with_sha1: true
         suffix: .whl
       env:
