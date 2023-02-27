@@ -88,15 +88,15 @@ jobs:
       with:
         name: wheel
     - name: Save wheel filename
-      run: echo WHEEL_FILENAME=$(ls -1 *.whl | head -1) >> $GITHUB_ENV
+      run: echo WHEEL_FILENAME=${$(ls -1 *.whl | head -1)%.*} >> $GITHUB_ENV
     - name: Check saved wheel filename
       run: echo ${{ env.WHEEL_FILENAME }}
+    - name: Remove wheel file extension
+      run: mv $(ls -1 *.whl | head -1) ${{ env.WHEEL_FILENAME }}
     - name: Add asset
       uses: PeerXu/upload-asset@v1
       with:
         file: ${{ env.WHEEL_FILENAME }}
-        # os: linux
-        # arch: amd64
         with_tag: false
         with_sha1: true
         suffix: .whl
