@@ -91,9 +91,9 @@ jobs:
       with:
         name: wheel
     - name: Install wheel
-    - run: pip install *.whl
+      run: pip install *.whl
     - name: Check package version
-    - run: python -c "import tsnorm as ts; assert ts.__version__ == '${{ github.event.release.tag_name }}'"
+      run: python -c "import tsnorm as ts; assert ts.__version__ == '${{ github.event.release.tag_name }}'"
 
   deploy-github:
 
