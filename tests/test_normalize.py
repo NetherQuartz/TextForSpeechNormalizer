@@ -29,3 +29,13 @@ def test_min_word_len():
     normalizer.min_word_len = 3
     stressed_text = normalizer("Как хорошо и не привольно!")
     assert stressed_text == "К+ак хорош+о и не прив+ольно!"
+
+
+def test_stress_mark_position():
+    normalizer = tsnorm.Normalizer(stress_mark="-", stress_mark_pos="after")
+    stressed_text = normalizer("Трупы оживали, землю разрывали")
+    assert stressed_text == "Тру-пы ожива-ли, зе-млю разрыва-ли"
+
+    normalizer = tsnorm.Normalizer(stress_mark="+", stress_mark_pos="before")
+    stressed_text = normalizer("Трупы оживали, землю разрывали")
+    assert stressed_text == "Тр+упы ожив+али, з+емлю разрыв+али"

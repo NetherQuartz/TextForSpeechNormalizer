@@ -51,15 +51,14 @@ class Normalizer:
         word = list(word)
         insert_num = 0
         for pos in stress_pos:
+            pos += insert_num
             match self.stress_mark_pos:
                 case "before":
-                    pos += insert_num
                     word.insert(pos, self.stress_mark)
-                    insert_num += len(self.stress_mark)
                 case "after":
-                    pos += insert_num + 1
-                    word.insert(pos, self.stress_mark)
-                    insert_num += len(self.stress_mark) - 1
+                    word.insert(pos + 1, self.stress_mark)
+
+            insert_num += len(self.stress_mark) - 1
 
         return "".join(word)
 
