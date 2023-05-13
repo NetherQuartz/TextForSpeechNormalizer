@@ -51,9 +51,15 @@ class Normalizer:
         word = list(word)
         insert_num = 0
         for pos in stress_pos:
-            pos += insert_num
-            word.insert(pos, self.stress_mark)
-            insert_num += len(self.stress_mark)
+            match self.stress_mark_pos:
+                case "before":
+                    pos += insert_num
+                    word.insert(pos, self.stress_mark)
+                    insert_num += len(self.stress_mark)
+                case "after":
+                    pos += insert_num + 1
+                    word.insert(pos, self.stress_mark)
+                    insert_num += len(self.stress_mark) - 1
 
         return "".join(word)
 
@@ -159,10 +165,12 @@ class Normalizer:
             accentuated = self.accentuate_word(word)
 
             low_word = accentuated.lower()
-            if self.stress_monosyllabic and self.stress_mark not in accentuated:
-                if (vow := set("аеёиоуыэюя") & set(low_word)) and len(vow) == 1:
+            if (vow := [c for c in low_word if c in "аеёиоуыэюя"]) and len(vow) == 1:
+                if self.stress_monosyllabic and self.stress_mark not in accentuated:
                     vow_pos = low_word.find(vow.pop())
                     accentuated = self.put_stress_mark(accentuated, [vow_pos])
+                elif not self.stress_monosyllabic and self.stress_mark in accentuated:
+                    accentuated = accentuated.replace(self.stress_mark, "")
 
             low_word = accentuated.lower()
             if self.stress_yo and self.stress_mark not in accentuated:
