@@ -2,6 +2,12 @@
 
 Accentuation is a common task in speech-related fields, e.g., text-to-speech, speech recognition, or just language learning. This library puts stress marks in text using data from Wiktionary and syntactic analysis of Spacy.
 
+### Installation
+Python 3.10 and above supported.
+```bash
+pip install tsnorm
+```
+
 ### General usage
 ```Python
 from tsnorm import Normalizer
