@@ -14,6 +14,7 @@ class Normalizer:
     stress_mark_pos: Literal["before", "after"]
     stress_monosyllabic: bool
     stress_yo: bool
+    min_word_len: int
 
     _model: spacy.language.Language
     _word_forms: dict[str, list[dict[str, Any]]]
@@ -23,7 +24,8 @@ class Normalizer:
             stress_mark: str,
             stress_mark_pos: Literal["before", "after"],
             stress_monosyllabic=False,
-            stress_yo=False) -> None:
+            stress_yo=False,
+            min_word_len=1) -> None:
 
         if stress_mark_pos not in ["before", "after"]:
             raise ValueError("stress_mark_pos must be one of ['before', 'after']")
@@ -32,6 +34,7 @@ class Normalizer:
         self.stress_mark_pos = stress_mark_pos
         self.stress_monosyllabic = stress_monosyllabic
         self.stress_yo = stress_yo
+        self.min_word_len = min_word_len
 
         self._word_forms = pickle.load(resource_stream(__name__, "dictionary/wordforms.dat"))
         self._lemmas = pickle.load(resource_stream(__name__, "dictionary/lemmas.dat"))
@@ -180,6 +183,9 @@ class Normalizer:
                 accentuated = accentuated.upper()
 
             accentuated = prefix + accentuated
+
+            if len(accentuated) - len(self.stress_mark) < self.min_word_len:
+                accentuated = accentuated.replace(self.stress_mark, "")
 
             res += accentuated
             res += word["whitespace"]
