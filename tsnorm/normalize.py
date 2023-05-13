@@ -3,7 +3,7 @@ import pickle
 import spacy
 
 from pkg_resources import resource_stream
-from typing import Any, Optional
+from typing import Any, Optional, Literal
 
 from .spacy_model import MODEL
 
@@ -11,19 +11,27 @@ from .spacy_model import MODEL
 class Normalizer:
 
     stress_mark: str
-    stress_mark_pos: str
+    stress_mark_pos: Literal["before", "after"]
+    stress_monosyllabic: bool
+    stress_yo: bool
 
     _model: spacy.language.Language
     _word_forms: dict[str, list[dict[str, Any]]]
     _lemmas: dict[str, dict[str, Any]]
 
-    def __init__(self, stress_mark: str, stress_mark_pos: str) -> None:
+    def __init__(self,
+            stress_mark: str,
+            stress_mark_pos: Literal["before", "after"],
+            stress_monosyllabic=False,
+            stress_yo=False) -> None:
 
         if stress_mark_pos not in ["before", "after"]:
             raise ValueError("stress_mark_pos must be one of ['before', 'after']")
 
         self.stress_mark = stress_mark
         self.stress_mark_pos = stress_mark_pos
+        self.stress_monosyllabic = stress_monosyllabic
+        self.stress_yo = stress_yo
 
         self._word_forms = pickle.load(resource_stream(__name__, "dictionary/wordforms.dat"))
         self._lemmas = pickle.load(resource_stream(__name__, "dictionary/lemmas.dat"))
@@ -146,10 +154,33 @@ class Normalizer:
         words = self.tokenize(text)
         for word in words:
             accentuated = self.accentuate_word(word)
+
+            low_word = accentuated.lower()
+            if self.stress_monosyllabic and self.stress_mark not in accentuated:
+                if (vow := set("аеёиоуыэюя") & set(low_word)) and len(vow) == 1:
+                    vow_pos = low_word.find(vow.pop())
+                    accentuated = self.put_stress_mark(accentuated, [vow_pos])
+
+            low_word = accentuated.lower()
+            if self.stress_yo and self.stress_mark not in accentuated:
+                if (yo_pos := low_word.find("ё")) != -1:
+                    accentuated = self.put_stress_mark(accentuated, [yo_pos])
+            elif not self.stress_yo:
+                accentuated = accentuated.replace(self.put_stress_mark("ё", [0]), "ё")
+                accentuated = accentuated.replace(self.put_stress_mark("Ё", [0]), "Ё")
+
+            prefix = ""
+            if accentuated[0] == self.stress_mark:
+                prefix = accentuated[0]
+                accentuated = accentuated[1:]
+
             if "starts_with_a_capital_letter" in word and word["starts_with_a_capital_letter"]:
-                accentuated = accentuated.capitalize()
+                accentuated = accentuated.capitalize()  # плюс не буква
             if "uppercase" in word and word["uppercase"]:
                 accentuated = accentuated.upper()
+
+            accentuated = prefix + accentuated
+
             res += accentuated
             res += word["whitespace"]
 
