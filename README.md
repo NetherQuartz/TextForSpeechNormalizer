@@ -1,6 +1,6 @@
-# Automatic accentuation for Russian texts
+# Automatic accentuation for texts in Russian
 
-Accentuation is a common task in speech-related fields, e.g., text-to-speech, speech recognition, or just language learning. This library puts stress marks in text using data from Wiktionary and syntactic analysis of Spacy.
+Accentuation is a common task in such speech-related fields as text-to-speech, speech recognition and language learning. This library is used to mark stressed vowels in given texts using the data from Wiktionary and syntactic analysis of [Spacy](https://github.com/explosion/spaCy).
 
 ### Installation
 Python 3.10 and above supported.
