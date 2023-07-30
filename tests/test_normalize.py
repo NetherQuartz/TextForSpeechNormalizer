@@ -2,6 +2,8 @@
 
 import tsnorm
 
+from tsnorm import CustomDictionary, WordForm, WordFormTags, Lemma, LemmaPOS
+
 
 def test_stress():
     normalizer = tsnorm.Normalizer(stress_mark="+", stress_mark_pos="before")
@@ -39,3 +41,26 @@ def test_stress_mark_position():
     normalizer = tsnorm.Normalizer(stress_mark="+", stress_mark_pos="before")
     stressed_text = normalizer("Трупы оживали, землю разрывали")
     assert stressed_text == "Тр+упы ожив+али, з+емлю разрыв+али"
+
+
+def test_custom_dictionary():
+    normalizer = tsnorm.Normalizer(stress_mark="+", stress_mark_pos="before")
+    stressed_text = normalizer("Мы приехали из Редании")
+    assert stressed_text == "Мы при+ехали из Редании"
+
+    dictionary = CustomDictionary(
+        word_forms=[
+            WordForm("Редании", 3, WordFormTags(singular=True, genitive=True), "Редания")
+        ],
+        lemmas=[
+            Lemma("Редания", LemmaPOS(NOUN=True))
+        ]
+    )
+
+    normalizer.update_dictionary(dictionary)
+    stressed_text = normalizer("Мы приехали из Редании")
+    assert stressed_text == "Мы при+ехали из Ред+ании"
+
+    normalizer = tsnorm.Normalizer(stress_mark="+", stress_mark_pos="before", custom_dictionary=dictionary)
+    stressed_text = normalizer("Мы приехали из Редании")
+    assert stressed_text == "Мы при+ехали из Ред+ании"

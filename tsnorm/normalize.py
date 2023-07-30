@@ -6,6 +6,7 @@ from pkg_resources import resource_stream
 from typing import Any, Optional, Literal
 
 from .spacy_model import MODEL
+from .types import CustomDictionary
 
 
 class Normalizer:
@@ -23,9 +24,10 @@ class Normalizer:
     def __init__(self,
             stress_mark: str,
             stress_mark_pos: Literal["before", "after"],
-            stress_monosyllabic=False,
-            stress_yo=False,
-            min_word_len=1) -> None:
+            stress_monosyllabic: bool = False,
+            stress_yo: bool = False,
+            min_word_len: int = 1,
+            custom_dictionary: CustomDictionary = None) -> None:
 
         if stress_mark_pos not in ["before", "after"]:
             raise ValueError("stress_mark_pos must be one of ['before', 'after']")
@@ -39,6 +41,9 @@ class Normalizer:
         self._word_forms = pickle.load(resource_stream(__name__, "dictionary/wordforms.dat"))
         self._lemmas = pickle.load(resource_stream(__name__, "dictionary/lemmas.dat"))
 
+        if custom_dictionary:
+            self.update_dictionary(custom_dictionary)
+
         self._model = spacy.load(MODEL)
 
         for word, forms in self._word_forms.items():
@@ -46,6 +51,10 @@ class Normalizer:
                 if len(forms) == 1:
                     self._model.tokenizer.add_special_case(word, [{"ORTH": word}])
                     self._model.tokenizer.add_special_case(word.capitalize(), [{"ORTH": word.capitalize()}])
+
+    def update_dictionary(self, dictionary: CustomDictionary) -> None:
+        self._word_forms.update(dictionary.word_forms)
+        self._lemmas.update(dictionary.lemmas)
 
     def put_stress_mark(self, word: str, stress_pos: list[int]) -> str:
         word = list(word)
