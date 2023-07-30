@@ -129,8 +129,6 @@ class Normalizer:
         return res
 
     def accentuate_word(self, word: dict[str, Any]) -> str:
-        if "tag" in word and "PROPN" in word["tag"]:
-            return word["token"]
 
         if word["is_punctuation"] or "interpretations" not in word:
             return word["token"]
