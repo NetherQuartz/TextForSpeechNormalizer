@@ -63,6 +63,43 @@ normalizer("Разбежавшись, прыгну со скалы, вот я б
 # Output: Разбеж+авшись, пр+ыгну со скал+ы, в+от я б+ыл и в+от мен+я не ст+ало
 ```
 
+### Expand normalizer dictionary
+
+```Python
+from tsnorm import Normalizer, CustomDictionary, WordForm, Lemma, WordFormTags, LemmaPOS
+
+
+normalizer = Normalizer("+", "before")
+
+normalizer("Охотник Себастьян, что спал на чердаке")
+# Output: Ох+отник Себастьян, что спал на чердак+е
+
+dictionary = CustomDictionary(
+    word_forms=[
+        WordForm("Себастьян", 7, WordFormTags(singular=True, nominative=True), "Себастьян")
+    ],
+    lemmas=[
+        Lemma("Себастьян", LemmaPOS(PNOUN=True))
+    ]
+)
+
+normalizer.update_dictionary(dictionary)
+
+normalizer("Охотник Себастьян, что спал на чердаке")
+# Output: Ох+отник Себасть+ян, что спал на чердак+е
+```
+
+It's also possible to pass `CustomDictionary` at normalizer initialization:
+```Python
+normalizer = Normalizer("+", "before", custom_dictionary=dictionary)
+```
+
+To add your custom words to normalizer dictionary you must pass two lists to `CustomDictionary`:
+1. a list of `WordForm` objects, which are forms of each word with case, tense and lemma information, as well as the positions of stressed letters,
+2. a list of `Lemma` objects, which are records of lemmas with their parts of speech.
+
+Parts of speech for lemmas are configured using the `LemmaPOS` class which stores [universal POS tags](https://universaldependencies.org/u/pos/).
+
 ## Acknowledgement
 
 This library is based on code by @einhornus from his [article](https://habr.com/ru/articles/575100/) on Habr.
