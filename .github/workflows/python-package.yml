@@ -62,7 +62,7 @@ jobs:
     - name: Remove source code
       run: rm -rf tsnorm
     - name: Download wheel
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: wheel
     - name: Install wheel and dependencies
@@ -87,7 +87,7 @@ jobs:
       with:
         python-version: ${{ matrix.python_version }}
     - name: Download wheel
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: wheel
     - name: Install wheel
@@ -106,7 +106,7 @@ jobs:
     steps:
     - run: echo ${{ github.event_name }} ${{ github.event.action }}
     - name: Download wheel
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: wheel
     - name: Save wheel filename
@@ -134,7 +134,7 @@ jobs:
     
     steps:
     - name: Download wheel
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: wheel
     - name: Publish to PyPI
@@ -154,7 +154,7 @@ jobs:
     
     steps:
     - name: Download wheel
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: wheel
     - name: Publish to PyPI
